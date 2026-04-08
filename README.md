@@ -66,6 +66,9 @@ Increasing the size of the smaller patch to approximately match the visible area
 
 This illusion is generally more difficult to produce reliably compared to other explored phenomena.
 
+## lighting_checkerboard_app_v4.py
+
+This tools allows users to explore lighting illusions usiing the checker board illusion. To enhance the illusion choose Shadow darkening value that is two times the size of difference between colors maximum vector lenght and dark version values. In this case the comparison colors can be choosen as shaded version of the lighter patch and darker patch outside the shadow and thus provide the same color for comparison 1 and 2.
 ---
 
 ## Color consistency playground.py
