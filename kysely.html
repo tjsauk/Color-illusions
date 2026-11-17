@@ -1,0 +1,307 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kysely — Color Perception / Värihavainto</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:#f3f5f9;color:#15243b}*{box-sizing:border-box}body{margin:0}main{max-width:1034px;margin:auto;padding:22px 17px 56px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 19px;border-bottom:1px solid #d9e1eb;margin-bottom:19px}.brand{font-size:19px;font-weight:800}.brand small{display:block;font-size:12px;font-weight:500;color:#60718a}.row{display:flex;align-items:center;gap:11px;flex-wrap:wrap}.muted{color:#67768a;font-size:14px}.badge{padding:6px 9px;border-radius:30px;background:#e8edf6;color:#53677f;font-size:12px;font-weight:700}.hidden{display:none!important}
+h1{font-size:clamp(25px,4vw,34px);line-height:1.21;margin:0 0 20px}h2{font-size:19px;margin:0 0 10px}p{margin:0 0 13px;color:#3f4b5e;line-height:1.6}.kicker{font-size:12px;letter-spacing:.11em;font-weight:800;color:#56708e;text-transform:uppercase;margin-bottom:10px}
+.panel{background:#fff;border:1px solid #dce4ec;border-radius:17px;padding:28px;margin:14px 0;box-shadow:0 4px 15px #1232 0}.bilingual{display:grid;grid-template-columns:1fr 1fr;gap:28px}.bilingual>div+div{border-left:1px solid #e4eaf1;padding-left:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:48px;padding:11px 20px;font-weight:700;font-size:15px;border:1px solid #c8d5e6;border-radius:11px;background:#fff;color:#1b3150;text-align:center;cursor:pointer;text-decoration:none}.btn:hover{background:#eef3fa}.btn:focus-visible{outline:3px solid #438bfa;outline-offset:2px}.btn.primary{background:#214f96;border-color:#214f96;color:white}.btn.primary:hover{background:#173d7b}.btn.sm{min-height:35px;padding:7px 11px;font-size:13px}hr{border:0;border-top:1px solid #e6eaf1;margin:22px 0}.small{font-size:13px}
+.status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:13px;color:#67768a;margin-bottom:10px}.progress{background:#e5ebf4;border-radius:10px;height:7px;flex:1;min-width:110px}.progress>div{background:#4a77c7;height:100%;border-radius:10px;width:0%}.question{text-align:center;font-size:20px;font-weight:800;margin:12px 0 14px}.question small{display:block;color:#67768a;font-weight:400;font-size:14px;margin:4px auto}.canvas-scroll{width:100%;overflow-x:auto;padding:2px 0 0}canvas{display:block;width:900px;height:480px;max-width:none;margin:0 auto;background:rgb(128,128,128);border-radius:9px}.answers{display:flex;flex-wrap:wrap;gap:11px;justify-content:center;margin:18px auto 4px}.answers button{min-width:145px}
+.slab{background:#f1f4f9;border-radius:11px;padding:16px}.notice{padding:12px 16px;background:#f0f3f8;border-radius:10px;color:#3c526f;margin-top:18px;font-size:14px}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.space{margin-top:24px}.results-line{font-size:17px;color:#233955}.results-line b{font-size:20px}.replay-bar select{max-width:100%;font-size:13px}.footer{color:#728092;font-size:12px;margin-top:20px}
+@media(max-width:720px){main{padding:13px 11px 38px}.panel{padding:19px}.bilingual{grid-template-columns:1fr;gap:12px}.bilingual>div+div{border-left:0;border-top:1px solid #e4eaf1;padding:16px 0 0}.answers .btn{min-width:112px;font-size:13px;padding:10px 12px}.brand{font-size:16px}.status{gap:8px}}
+</style></head><body><main>
+<header><div class="brand">COLOR SQUARES <small>Color perception experiment · Värihavaintokoe</small></div><div class="row"><span id="version" class="badge"></span><button type="button" id="import" class="btn sm">Replay CSV / Toista CSV</button><input id="file" type="file" accept=".csv,text/csv" class="hidden"></div></header>
+<section id="welcome" class="panel"><p class="kicker">Before starting · Ennen aloittamista</p><h1>Color perception experiment<br>Värihavaintokoe</h1>
+<div class="bilingual"><div><h2>English</h2>
+<p><strong>Taking part is voluntary.</strong> You may stop at any time. The survey does not ask for your name, contact information or any other personal details. No IP address, browser/device identifier, location, date/time or response times are stored in the CSV. The CSV contains only your answers and the displayed color samples with their settings.</p>
+<p>You will see colored squares and answer how they appear to you. There are no right or wrong answers. Please choose an answer for every question you complete. Six parts of 25 questions plus six practice examples; instructions before each part.</p>
+<p id="welcome-return-en"></p>
+<p class="small">The downloaded file is named using the date and time of download (to milliseconds) to prevent mix-ups. That timestamp is only in the filename, not inside the CSV. The person who receives the file may know who returned it through the return method. Responses may be saved locally in this browser to permit resuming; nothing is uploaded automatically.</p>
+</div><div><h2>Suomeksi</h2>
+<p><strong>Osallistuminen on vapaaehtoista.</strong> Voit keskeyttää milloin tahansa. Kysely ei pyydä nimeä, yhteystietoja tai muita henkilötietoja. CSV-tiedostoon ei tallenneta IP-osoitetta, selain- tai laitetunnistetta, sijaintia, päivämäärää/kellonaikaa eikä vastausaikoja. CSV sisältää vain vastaukset sekä näytetyt värinäytteet asetuksineen.</p>
+<p>Näet värillisiä neliöitä ja vastaat sen perusteella, miltä ne näyttävät. Kysymyksiin ei ole oikeita tai vääriä vastauksia. Valitse vastaus jokaiseen tekemääsi kysymykseen. Kokeessa on kuusi 25 kysymyksen osiota ja kuusi harjoitusta; osioiden ohjeet näytetään erikseen.</p>
+<p id="welcome-return-fi"></p>
+<p class="small">Ladattavan tiedoston nimi sisältää lataushetken päivämäärän ja kellonajan millisekunnin tarkkuudella, jotta tiedostot eivät sekoitu. Aika on vain tiedostonimessä, ei CSV:n sisällä. Palautustapa voi kertoa vastaanottajalle, kuka palautti tiedoston. Vastauksia voidaan säilyttää paikallisesti selaimessa kokeen jatkamista varten; mitään ei lähetetä automaattisesti.</p>
+</div></div>
+<div class="row space"><button class="btn primary" id="start">Start / Aloita</button><button class="btn hidden" id="resume">Resume / Jatka kesken jäänyttä</button></div><p id="storage-warning" class="notice hidden">Local storage was unavailable. Download an interim CSV at each pause. / Välitallennus ei onnistunut. Lataa osittainen CSV tauoilla.</p></section>
+<section id="intro" class="panel hidden"><p id="intro-kicker" class="kicker"></p><h1 id="intro-title"></h1><div id="intro-description" class="bilingual"></div><div class="row space"><button id="begin-block" class="btn primary">Begin / Aloita</button><span id="intro-practice" class="muted"></span><button id="intro-export" class="btn hidden">Download interim CSV / Lataa väliaikainen CSV</button></div></section>
+<section id="trial" class="hidden"><div class="status"><span id="counter"></span><div class="progress"><div id="progress"></div></div><span id="block-label"></span></div><div class="panel" style="padding:17px 15px 19px"><div id="question" class="question"></div><div class="canvas-scroll"><canvas id="experiment-canvas" width="900" height="480" aria-label="Colored squares / Värilliset neliöt"></canvas></div><div id="answers" class="answers"></div></div></section>
+<section id="break" class="panel hidden"><p class="kicker">Break / Tauko</p><h1 id="break-title">Ready for the next part?<br>Valmis seuraavaan osaan?</h1><p id="break-description">Continue whenever you are ready. / Jatka, kun olet valmis.</p><div class="row space"><button id="continue" class="btn primary">Continue / Jatka</button><button id="save-partial" class="btn">Download current CSV / Lataa tämänhetkinen CSV</button></div></section>
+<section id="results" class="panel hidden"><p class="kicker">Complete · Valmis</p><h1>Thank you!<br>Kiitos osallistumisestasi!</h1><p class="results-line"><b id="total-answered">150</b> questions completed / kysymystä vastattu.</p>
+<div class="slab"><h2 id="return-heading">Results / Tulokset</h2>
+<p id="result-return-en"></p><p id="result-return-fi"></p>
+<div class="row"><button id="download" class="btn primary">Download CSV / Lataa CSV</button><a class="btn" id="open-email" href="mailto:tjsauk@utu.fi?subject=Test%20data">Open email / Avaa sähköposti</a><button class="btn" id="copy-email">Copy address / Kopioi osoite</button></div></div>
+<p class="notice">The CSV itself contains no personal or technical identifiers, dates or response timing. A timestamp is present only in its filename. Your email or teacher submission may be identifiable to the recipient.<br>CSV ei sisällä henkilö- tai teknisiä tunnisteita, päivämääriä eikä vastausten ajoitusta. Kellonaika on vain tiedostonimessä. Sähköposti- tai opettajapalautus voi paljastaa vastaanottajalle palauttajan.</p>
+<div class="row space"><button id="erase-local" class="btn">Erase local answers / Poista paikalliset vastaukset</button><button id="new-session" class="btn">New session / Uusi koe</button></div></section>
+<section id="replay" class="panel hidden"><p class="kicker">Stimulus replay · Näytteiden uudelleenpiirto</p><h1>Results CSV / Tulos-CSV</h1><p id="replay-count" class="muted"></p><div class="row replay-bar"><select id="replay-index" class="btn"></select><button id="replay-prev" class="btn sm">Previous / Edellinen</button><button id="replay-next" class="btn sm">Next / Seuraava</button></div><div class="canvas-scroll space"><canvas id="replay-canvas" width="900" height="480"></canvas></div><p id="replay-details" class="mono small space"></p><button id="replay-close" class="btn">Back / Takaisin</button></section>
+</main><script>/* Color Squares, research build v3.0.0 — self-contained, no network requests. */
+'use strict';
+const APP_VERSION='3.0.0';
+const SCHEMA_VERSION='color_squares_single_csv_v3';
+const PROTOCOL_VERSION='square_study_2026_11_v3';
+const DATASET_ROLE='study';
+const PROTOCOL_SHA256='85cc01b552e85ee1d470ac38d16bfa58eb86cedda0272da6ce2301838224a40e';
+const RETURN_MODE='email'; // email or teacher (instructions only; never uploads)
+const STORAGE_KEY='kysely-v3-'+DATASET_ROLE+'-'+RETURN_MODE;
+const EMAIL='tjsauk@utu.fi';
+const BLOCKS=['F1','F2','M','A','B','D'];
+const MAIN_PER_BLOCK=25, TOTAL=150;
+const W=[.2126,.7152,.0722];
+const sqrt2=Math.sqrt(2),sqrt3=Math.sqrt(3),sqrt6=Math.sqrt(6);
+const G=[1/sqrt3,1/sqrt3,1/sqrt3],EA=[1/sqrt2,-1/sqrt2,0],EB=[1/sqrt6,1/sqrt6,-2/sqrt6];
+const T_CHOICES=[.25,.50], RHO_CHOICES=[.06,.10,.16,.24,.30], PHASE_CHOICES=[0,.25,.5], FAMILY_K=[10,12,14];
+const GRAY_RHO=[0,.02,.035,.05,.06,.075,.09,.12,.16];
+const ANGULAR_DELTA=[0,3,6,9,12,15,18,21,24,27,30];
+const RESP={F:[['same','Same family / Sama väriperhe'],['different','Different family / Eri väriperhe']],M:[['left','Left family / Vasen'],['right','Right family / Oikea'],['own','Its own family / Oma väriperhe']],A:[['left','Left family / Vasen'],['right','Right family / Oikea'],['own','Its own family / Oma väriperhe']],B:[['colored','Colored / Värillinen'],['gray','Gray / Harmaa']],D:[['left','Left / Vasen'],['right','Right / Oikea'],['equal','Equally light / Yhtä vaaleat']]};
+const BLOCK_INFO={
+ F1:{title:'1. Color families / Väriperheet',en:'Do these two squares belong to the same color family or to different color families? Decide from their appearance. Their colors do not have to be exactly identical to belong to the same family.',fi:'Kuuluvatko kaksi neliötä samaan vai eri väriperheeseen? Arvioi näkövaikutelman perusteella. Värit voivat kuulua samaan perheeseen olematta täsmälleen samanvärisiä.',practice:2},
+ F2:{title:'2. Color families again / Väriperheet uudelleen',en:'You will repeat the same kind of task. Judge each pair independently, according to what you see now.',fi:'Sama väriperhetehtävä toistuu. Vastaa jokaiseen pariin itsenäisesti sen perusteella, miltä värit nyt näyttävät.',practice:0},
+ M:{title:'3. Colors halfway between / Värien puolivälit',en:'Three squares appear. Which family does the CENTER square belong to: the LEFT family, the RIGHT family, or a family of its OWN? Every option is a valid response.',fi:'Näet kolme neliötä. Kuuluuko KESKIMMÄINEN väri VASEMMAN, OIKEAN vai OMAAN väriperheeseensä? Valitse aina yksi kolmesta.',practice:1},
+ A:{title:'4. Color boundaries / Värirajat',en:'Choose the color family of the CENTER square: LEFT, RIGHT or its OWN. Larger squares around it may vary. Judge the whole display as you see it.',fi:'Valitse KESKIMMÄISEN neliön väriperhe: VASEN, OIKEA tai OMA. Ympäröivät suuret neliöt saattavat vaihtua. Vastaa näkövaikutelmasi perusteella.',practice:1},
+ B:{title:'5. Color or gray / Värillinen vai harmaa',en:'Does the CENTER region appear colored or gray? Its neighboring regions can vary. Always choose one of the two responses.',fi:'Näyttääkö KESKIMMÄINEN alue värilliseltä vai harmaalta? Naapurialueet voivat vaihdella. Valitse aina toinen vaihtoehdoista.',practice:1},
+ D:{title:'6. Lightness / Vaaleus',en:'Which central square looks lighter: LEFT, RIGHT, or are they EQUALLY LIGHT? Consider apparent lightness rather than how similar their hues are.',fi:'Kumpi keskimmäisistä neliöistä näyttää vaaleammalta: VASEN, OIKEA vai YHTÄ VAALEAT? Arvioi vaaleutta, älä värisävyjen samankaltaisuutta.',practice:1}
+};
+const QUESTIONS={F:'Do these squares belong to the same color family?<small>Kuuluvatko neliöt samaan väriperheeseen?</small>',M:'Which family does the CENTER color belong to?<small>Kuuluuko KESKIMMÄINEN väri vasempaan, oikeaan vai omaan väriperheeseensä?</small>',A:'Which family does the CENTER color belong to?<small>Kuuluuko KESKIMMÄINEN väri vasempaan, oikeaan vai omaan väriperheeseensä?</small>',B:'Does the CENTER region look colored or gray?<small>Näyttääkö KESKIMMÄINEN alue värilliseltä vai harmaalta?</small>',D:'Which central square looks lighter?<small>Kumpi keskimmäisistä neliöistä näyttää vaaleammalta?</small>'};
+const PROTOCOL={name:'Color squares: hue families, midpoint, angular boundaries, gray, lightness',version:PROTOCOL_VERSION,role_independent:true,blocks:BLOCKS,per_block:25,practice_by_block:[2,0,1,1,1,1],fixed_slots_by_block:[17,17,18,18,18,17],generated_slots_by_block:[8,8,7,7,7,8],shared_family_repeat:true,profiles:{family:{K:FAMILY_K,phase_fractions:PHASE_CHOICES,mean_code:T_CHOICES,rho:RHO_CHOICES},midpoint:{K:12,delta_deg:15,phase_fractions:PHASE_CHOICES,mean_code:T_CHOICES,rho:RHO_CHOICES},boundary:{K:12,phase_fractions:PHASE_CHOICES,delta_deg:ANGULAR_DELTA,alpha_deg:35,weighted_code:.2},gray:{mean_code:T_CHOICES,rho:GRAY_RHO,surround_rho:.2},lightness:{weighted_code:.2,gray_controls:true}},presentation:{canvas:[900,480],background:[128,128,128],use_srgb_code_values:true,quantizer:'floor(255*c+0.5)',no_filtering:true},selection:{fixed_bank:'deterministic factorial library; random stratified subset per participant',generated:'seeded additional non-grid stimuli in predeclared ranges',pair_contexts:'exactly same RGBs in both contexts',repeats:'all 25 family stimuli once in each of first two blocks'},randomization:{seed:'crypto.getRandomValues 128-bit',prng:'sfc32-v1',shuffle:'Fisher-Yates, retry to avoid adjacent repeat keys',response_sides:'counterbalanced within blocks, independently of context'},export:{format:'UTF-8 RFC4180 CSV',stimuli:'complete JSON object positions and RGB8 per row',personal_data:'no direct or technical identifiers or absolute timing exported',timing:'no response times or timestamps exported'},analysis:{gray_threshold:'logistic colored response versus realized rho; subgroup mean/context',angular:'left/right-conditional logistic B-choice; own-family separately',family:'same rate by K/phase/rho',midpoint:'own/left/right by K=12,phase/rho',lightness:'response proportions by variant and context',limitations:'K comparisons also change angular separation; no device spectral calibration, no proof of natural K=12'}};
+const f=x=>Number.isFinite(x)?Number(x.toFixed(9)):null;
+const mod360=x=>(x%360+360)%360;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+const direction=th=>{let r=th*Math.PI/180;return EA.map((x,i)=>x*Math.cos(r)+EB[i]*Math.sin(r));};
+function pack(rgb,requested={}){if(rgb.some(c=>!Number.isFinite(c)||c< -1e-10||c>1+1e-10))throw Error('Stimulus outside sRGB gamut: '+rgb);
+ const u8=rgb.map(x=>Math.floor(255*clamp(x,0,1)+.5)),q=u8.map(x=>x/255),ax=dot(q,EA),by=dot(q,EB),rho=Math.hypot(ax,by),L=Math.hypot(...q),projection=dot(q,G);
+ return {rgb8:u8,requested_rgb:rgb.map(f),requested,realized:{theta_deg:rho<1e-12?null:f(mod360(Math.atan2(by,ax)*180/Math.PI)),rho:f(rho),alpha_deg:L<1e-12?null:f(Math.atan2(rho,projection)*180/Math.PI),L:f(L),mean_code:f(q.reduce((a,b)=>a+b,0)/3),weighted_code:f(dot(q,W))}};}
+function radial(th,rho,t=.25){const u=direction(th);return pack(u.map(x=>t+rho*x),{profile:'radial_mean',theta_deg:f(mod360(th)),rho:f(rho),mean_code:f(t)});}
+function weighted(th,alpha=35,w=.2){const u=direction(th),r=alpha*Math.PI/180,d=G.map((x,i)=>Math.cos(r)*x+Math.sin(r)*u[i]),L=w/dot(W,d);return pack(d.map(x=>L*x),{profile:'weighted_code',theta_deg:f(mod360(th)),alpha_deg:alpha,weighted_code:w});}
+const gray=t=>radial(0,0,t);
+function longerRadiusInfo(t){
+ if(t.module!=='A')return {};
+ const dirAt=theta=>{const u=direction(theta),r=35*Math.PI/180;return G.map((x,i)=>Math.cos(r)*x+Math.sin(r)*u[i]);};
+ const a=dirAt(t.theta_a_requested_deg),b=dirAt(t.theta_b_requested_deg);
+ const edge=d=>Math.min(...d.filter(x=>x>0).map(x=>1/x));
+ const weightedLength=d=>.2/dot(W,d);
+ const cubeLonger=edge(a)>=edge(b)?'A':'B',weightedLonger=weightedLength(a)>=weightedLength(b)?'A':'B';
+ const target=t.colors.target.realized.theta_deg;
+ const base=t.theta_a_requested_deg;
+ const realized=target==null?null:f((target-base)-360*Math.round((target-base-t.delta_deg)/360));
+ return {delta_forward_realized_deg:realized,longer_cube:cubeLonger,longer_weighted:weightedLonger,delta_from_cube_longer_deg:realized==null?null:f(cubeLonger==='A'?realized:30-realized),delta_from_weighted_longer_deg:realized==null?null:f(weightedLonger==='A'?realized:30-realized)};
+}
+function seedWords(){if(!globalThis.crypto?.getRandomValues)throw Error('Cryptographic randomness is not available in this browser.');let words=new Uint32Array(4);crypto.getRandomValues(words);return Array.from(words);}
+function rngFromWords(w){let a=w[0]>>>0,b=w[1]>>>0,c=w[2]>>>0,d=w[3]>>>0;return ()=>{let t=(((a+b)|0)+d)|0;d=(d+1)|0;a=b^(b>>>9);b=(c+(c<<3))|0;c=((c<<21)|(c>>>11));c=(c+t)|0;return (t>>>0)/4294967296;};}
+const randint=(rng,n)=>Math.floor(rng()*n),choose=(rng,a)=>a[randint(rng,a.length)];
+function shuffle(rng,arr){const out=[...arr];for(let i=out.length-1;i>0;i--){const j=randint(rng,i+1);[out[i],out[j]]=[out[j],out[i]];}return out;}
+function orderBlock(rng,items){let best=items;let min=Infinity;for(let retry=0;retry<90;retry++){const a=shuffle(rng,items),cost=a.reduce((n,t,i)=>n+(i&&a[i-1].repeat_key===t.repeat_key?10:0)+(i>2&&a[i-3].condition===t.condition&&a[i-2].condition===t.condition&&a[i-1].condition===t.condition?1:0),0);if(cost<min){min=cost;best=a;}if(cost===0)break;}return best;}
+const uid=(prefix,i)=>prefix+'-'+String(i).padStart(3,'0');
+const common=(module,origin,base_id,attrs,colors)=>({module,origin,bank_id:base_id,canonical_id:base_id,repeat_key:base_id,condition:'neutral',variant:'',phase_fraction:null,K:null,theta_ref_deg:null,sector_k:null,mean_code_requested:null,rho_requested:null,delta_deg:null,reference_profile:'',colors,side_map:{},...attrs});
+function makeF(K,phase,k,rho,t,kind,origin='fixed'){
+ const step=360/K,ref=phase*step,a=ref+k*step,b=a+step,mid=(a+b)/2,x=kind==='mid_next'?mid:a,y=kind==='anchor_mid'?mid:b;
+ const id=['F',K,phase,k,rho,t,kind].join(':');return common('F',origin,id,{variant:kind,condition:'family',K,theta_ref_deg:f(ref),phase_fraction:f(phase),sector_k:k,rho_requested:f(rho),mean_code_requested:t,theta_a_requested_deg:f(mod360(x)),theta_b_requested_deg:f(mod360(y)),angular_sep_deg:f(y-x),reference_profile:'radial_mean'}, {A:radial(x,rho,t),B:radial(y,rho,t)});
+}
+function makeMid(phase,k,rho,t,origin='fixed'){
+ const a=phase*30+k*30,b=a+30,mid=a+15,id=['M',phase,k,rho,t].join(':');
+ return common('M',origin,id,{variant:'exact_midpoint',condition:'neutral',K:12,theta_ref_deg:f(phase*30),phase_fraction:f(phase),sector_k:k,rho_requested:f(rho),mean_code_requested:t,delta_deg:15,theta_a_requested_deg:f(mod360(a)),theta_b_requested_deg:f(mod360(b)),theta_target_requested_deg:f(mod360(mid)),reference_profile:'radial_mean'}, {A:radial(a,rho,t),B:radial(b,rho,t),target:radial(mid,rho,t)});
+}
+function makeA(phase,k,delta,context,origin='fixed'){
+ const a=phase*30+k*30,b=a+30,target=a+delta,id=['A',phase,k,delta,context].join(':');
+ const trial=common('A',origin,id,{variant:'three_way_angular',condition:context,K:12,theta_ref_deg:f(phase*30),phase_fraction:f(phase),sector_k:k,delta_deg:f(delta),theta_a_requested_deg:f(mod360(a)),theta_b_requested_deg:f(mod360(b)),theta_target_requested_deg:f(mod360(target)),reference_profile:'weighted_code_alpha35'}, {A:weighted(a),B:weighted(b),target:weighted(target)});trial.repeat_key=['A',phase,k,delta].join(':');return trial;
+}
+function makeB(k,rho,t,context,origin='fixed'){
+ const theta=30*k,id=['B',k,rho,t,context].join(':');
+ const trial=common('B',origin,id,{variant:'gray_three_panels',condition:context,K:12,theta_ref_deg:0,sector_k:k,rho_requested:f(rho),mean_code_requested:t,theta_target_requested_deg:theta,reference_profile:'radial_mean'}, {target:radial(theta,rho,t),neutral:gray(t),chromatic:radial(theta,.2,t)});trial.repeat_key=['B',k,rho,t].join(':');return trial;
+}
+function makeD(variant,a,b,context,origin='fixed'){
+ const id=['D',variant,a,b,context].join(':');let colors,attrs={variant,condition:context,K:12};
+ if(variant==='same_target'){const theta=a*30,rho=b,tar=radial(theta,rho,.25);colors={A:tar,B:tar};attrs={...attrs,rho_requested:rho,mean_code_requested:.25,theta_target_requested_deg:theta,reference_profile:'radial_mean'};}
+ else if(variant==='equal_weighted'){colors={A:weighted(a*30),B:weighted(((a+b)%12)*30)};attrs={...attrs,theta_a_requested_deg:a*30,theta_b_requested_deg:((a+b)%12)*30,reference_profile:'weighted_code_alpha35',weighted_code_requested:.2};}
+ else if(variant==='gray_difference'){let base=a,delta=b;colors={A:gray(base),B:gray(base+delta)};attrs={...attrs,mean_code_requested:base,gray_delta_requested:delta,reference_profile:'gray_code'};}
+ else throw Error('Unknown luminance variant');const trial=common('D',origin,id,attrs,colors);if(variant==='same_target')trial.repeat_key=['D',variant,a,b].join(':');return trial;
+}
+let cachedBank=null;
+function makeFixedBank(){if(cachedBank)return cachedBank;const bank={F:[],M:[],A:[],B:[],D:[]};
+ for(const K of FAMILY_K)for(const phase of PHASE_CHOICES)for(let k=0;k<K;k++)for(const rho of RHO_CHOICES)for(const t of T_CHOICES)for(const kind of ['anchor_mid','mid_next','anchor_next'])bank.F.push(makeF(K,phase,k,rho,t,kind));
+ for(const phase of PHASE_CHOICES)for(let k=0;k<12;k++)for(const rho of RHO_CHOICES)for(const t of T_CHOICES)bank.M.push(makeMid(phase,k,rho,t));
+ for(const phase of PHASE_CHOICES)for(let k=0;k<12;k++)for(const delta of ANGULAR_DELTA)for(const ctx of ['neutral','two_sided'])bank.A.push(makeA(phase,k,delta,ctx));
+ for(let k=0;k<12;k++)for(const rho of GRAY_RHO)for(const t of T_CHOICES)for(const ctx of ['neutral','chromatic'])bank.B.push(makeB(k,rho,t,ctx));
+ for(let k=0;k<12;k++)for(const rho of [.04,.08,.16])for(const ctx of ['neutral','contrast'])bank.D.push(makeD('same_target',k,rho,ctx));
+ for(let k=0;k<12;k++)for(const sep of [2,4,6])for(const ctx of ['neutral','contrast'])bank.D.push(makeD('equal_weighted',k,sep,ctx));
+ for(const base of [.25,.40,.55])for(const delta of [-.08,-.04,.04,.08])for(const ctx of ['neutral','contrast'])bank.D.push(makeD('gray_difference',base,delta,ctx));
+ cachedBank=bank;return bank;
+}
+const generatedId=(trial,j)=>{trial.bank_id='generated:'+trial.module+':'+j+':'+trial.bank_id;trial.canonical_id=trial.bank_id;trial.repeat_key='generated:'+trial.repeat_key;return trial;};
+const randomPhase=rng=>f(rng()*.999);
+const randomRho=rng=>f(.055+rng()*.245);
+function chooseFTrials(rng,bank){const out=[],used=new Set();
+ // All twelve K=12 sectors are represented at least once in the first family block.
+ for(let k=0;k<12;k++){const pool=bank.F.filter(t=>t.K===12&&t.sector_k===k);let t=(k===0||k===6)?pool.find(x=>x.phase_fraction===0&&x.rho_requested===.16&&x.mean_code_requested===.25&&x.variant==='anchor_mid'):choose(rng,pool);out.push(t);used.add(t.bank_id);}
+ for(const K of [10,10,10,14,14]){const pool=bank.F.filter(t=>t.K===K&&!used.has(t.bank_id));let t=choose(rng,pool);out.push(t);used.add(t.bank_id);}
+ for(let j=0;j<8;j++){let K=choose(rng,[10,12,12,14]),phase=randomPhase(rng),k=randint(rng,K),rho=randomRho(rng),t=choose(rng,T_CHOICES),kind=choose(rng,['anchor_mid','mid_next','anchor_next']);out.push(generatedId(makeF(K,phase,k,rho,t,kind,'generated'),j));}
+ return shuffle(rng,out);
+}
+function chooseMTrials(rng,bank){const out=[];for(let k=0;k<12;k++)out.push((k===0||k===6)?bank.M.find(t=>t.sector_k===k&&t.phase_fraction===0&&t.rho_requested===.16&&t.mean_code_requested===.25):choose(rng,bank.M.filter(t=>t.sector_k===k)));
+ for(let i=0;i<6;i++){let t=choose(rng,bank.M.filter(t=>!out.some(x=>x.bank_id===t.bank_id)));out.push(t);}
+ for(let i=0;i<7;i++)out.push(generatedId(makeMid(randomPhase(rng),randint(rng,12),randomRho(rng),choose(rng,T_CHOICES),'generated'),i));return shuffle(rng,out);
+}
+function chooseATrials(rng,bank){const out=[],sectors=[0,...shuffle(rng,Array.from({length:11},(_,k)=>k+1))],deltaOrder=[15,...shuffle(rng,[...ANGULAR_DELTA])];
+ for(let i=0;i<9;i++){const k=sectors[i],delta=deltaOrder[i],phase=i===0?0:choose(rng,PHASE_CHOICES);
+  for(const ctx of ['neutral','two_sided'])out.push(bank.A.find(t=>t.sector_k===k&&t.phase_fraction===phase&&t.delta_deg===delta&&t.condition===ctx));}
+ for(let i=9;i<12;i++){const k=sectors[i],delta=f(1+28*rng()),phase=randomPhase(rng);
+  for(const ctx of ['neutral','two_sided'])out.push(generatedId(makeA(phase,k,delta,ctx,'generated'),i*2+(ctx==='two_sided'?1:0)));}
+ out.push(generatedId(makeA(randomPhase(rng),randint(rng,12),f(6+18*rng()),'neutral','generated'),99));return shuffle(rng,out);
+}
+function chooseBTrials(rng,bank){const out=[],order=[0,...shuffle(rng,Array.from({length:11},(_,k)=>k+1))];
+ const rhos=shuffle(rng,[...GRAY_RHO, ...GRAY_RHO.slice(1)]);
+ for(let i=0;i<7;i++){const k=order[i],rho=i===0?.06:rhos[i],t=i%2?.5:.25;for(const ctx of ['neutral','chromatic'])out.push(bank.B.find(x=>x.sector_k===k&&x.rho_requested===rho&&x.mean_code_requested===t&&x.condition===ctx));}
+ for(let i=7;i<11;i++){const k=order[i],rho=rhos[i],t=i%2?.5:.25,ctx=i%2?'chromatic':'neutral';out.push(bank.B.find(x=>x.sector_k===k&&x.rho_requested===rho&&x.mean_code_requested===t&&x.condition===ctx));}
+ for(let j=0;j<3;j++){const k=order[(j+9)%12],rho=f(.015+.14*rng()),t=choose(rng,T_CHOICES);
+  for(const ctx of ['neutral','chromatic'])out.push(generatedId(makeB(k,rho,t,ctx,'generated'),j*2+(ctx==='chromatic'?1:0)));}
+ out.push(generatedId(makeB(randint(rng,12),f(.015+.14*rng()),choose(rng,T_CHOICES),'neutral','generated'),99));return shuffle(rng,out);
+}
+function chooseDTrials(rng,bank){const out=[];
+ for(let i=0;i<4;i++){const k=i===0?0:randint(rng,12),rho=i===0?.08:choose(rng,[.04,.08,.16]);for(const ctx of ['neutral','contrast'])out.push(bank.D.find(t=>t.variant==='same_target'&&t.theta_target_requested_deg===k*30&&t.rho_requested===rho&&t.condition===ctx));}
+ for(let i=0;i<5;i++){const k=i===0?0:randint(rng,12),sep=i===0?4:choose(rng,[2,4,6]),ctx=i%2?'contrast':'neutral';out.push(bank.D.find(t=>t.variant==='equal_weighted'&&t.theta_a_requested_deg===k*30&&t.theta_b_requested_deg===((k+sep)%12)*30&&t.condition===ctx));}
+ for(let i=0;i<4;i++){const base=i===0?.40:choose(rng,[.25,.40,.55]),delta=i===0?.04:choose(rng,[-.08,-.04,.04,.08]),ctx=i%2?'neutral':'contrast';out.push(bank.D.find(t=>t.variant==='gray_difference'&&t.mean_code_requested===base&&t.gray_delta_requested===delta&&t.condition===ctx));}
+ for(let j=0;j<2;j++){const k=randint(rng,12),rho=f(.03+.14*rng());for(const ctx of ['neutral','contrast'])out.push(generatedId(makeD('same_target',k,rho,ctx,'generated'),j*2+(ctx==='contrast'?1:0)));}
+ for(let j=0;j<2;j++)out.push(generatedId(makeD('equal_weighted',randint(rng,12),choose(rng,[1,3,5,7]),choose(rng,['neutral','contrast']),'generated'),j+10));
+ for(let j=0;j<2;j++){const base=f(.22+.32*rng()),delta=f((rng()<.5?-1:1)*(.03+.07*rng()));out.push(generatedId(makeD('gray_difference',base,delta,choose(rng,['neutral','contrast']),'generated'),j+20));}
+ return shuffle(rng,out);
+}
+function attachSides(t,rng,ordinal){const side=ordinal%2?'B':'A';if(t.module==='F'||t.module==='M'||t.module==='A'||t.module==='D')t.side_map={left:side,right:side==='A'?'B':'A'};
+ if(t.module==='A')t.side_map.context_left=choose(rng,['A','B']);
+ if(t.module==='B')t.side_map={context_left:choose(rng,['neutral','chromatic'])};
+ if(t.module==='D')t.side_map.context_left=choose(rng,['dark','light']);
+ return t;}
+function clone(t){return JSON.parse(JSON.stringify(t));}
+function practicePlan(rng){return {F1:[makeF(12,0,1,.24,.25,'anchor_next','practice'),makeF(12,0,5,.16,.25,'anchor_mid','practice')],F2:[],M:[makeMid(0,2,.20,.25,'practice')],A:[makeA(0,3,7,'neutral','practice')],B:[makeB(5,.06,.25,'chromatic','practice')],D:[makeD('gray_difference',.25,.08,'neutral','practice')]};}
+function createPlan(words){const rng=rngFromWords(words),bank=makeFixedBank(),F=chooseFTrials(rng,bank),M=chooseMTrials(rng,bank),A=chooseATrials(rng,bank),B=chooseBTrials(rng,bank),D=chooseDTrials(rng,bank),prac=practicePlan(rng),parts={};
+ parts.F1=orderBlock(rng,F.map(clone));
+ parts.F2=orderBlock(rng,F.map(t=>({...clone(t),repeated_from:'F1',is_retest:true})));
+ parts.M=orderBlock(rng,M.map(clone));parts.A=orderBlock(rng,A.map(clone));parts.B=orderBlock(rng,B.map(clone));parts.D=orderBlock(rng,D.map(clone));
+ const plan=[];
+ for(const block of BLOCKS){const list=[...prac[block].map(clone).map(t=>({...t,is_practice:true})),...parts[block].map(t=>({...t,is_practice:false}))];
+  let real=0;for(let i=0;i<list.length;i++){let t=list[i];if(!t.is_practice)real++;t.block=block;t.presentation_index=plan.length;t.block_index=t.is_practice?0:real;t.id=block+'-'+(t.is_practice?'P':'T')+'-'+String(i+1).padStart(3,'0');
+   attachSides(t,rng,i+(block==='F2'?1:0));plan.push(t);}
+ }
+ // Retest the same 25 stimuli but swap their original sides, not merely shift parity by an arbitrary sort order.
+ const f1=new Map(plan.filter(t=>t.block==='F1'&&!t.is_practice).map(t=>[t.bank_id,t]));for(const t of plan.filter(t=>t.block==='F2'&&!t.is_practice)){const original=f1.get(t.bank_id);t.side_map={left:original.side_map.right,right:original.side_map.left};t.repeat_key=original.repeat_key;}
+ const main=plan.filter(t=>!t.is_practice),fixed=main.filter(t=>t.origin==='fixed').length,gen=main.filter(t=>t.origin==='generated').length;
+ if(main.length!==TOTAL||fixed!==105||gen!==45||plan.length!==156||new Set(plan.map(t=>t.id)).size!==156)throw Error('Plan count/identity invariant failed: '+main.length+' '+fixed+' '+gen);
+ return plan;
+}
+function box(x,y,w,h,color,id){return {type:'rect',id,x,y,w,h,color:color.rgb8};}
+function centered(x,y,w,h,color,id){return box(Math.round(x-w/2),Math.round(y-h/2),w,h,color,id);}
+function textItem(str,x,y){return {type:'text',text:str,x,y,font:'bold 16px Arial',fill:[255,255,255]};}
+function scene(t){const s={scene_version:'square_scene_v2',canvas:{width:900,height:480,color_space:'srgb'},background:[128,128,128],objects:[],block:t.block,condition:t.condition};const add=(...o)=>s.objects.push(...o),label=(s,x,y)=>add(textItem(s,x,y));
+ const neutral=gray(.5);
+ if(t.module==='F'){add(centered(300,216,132,132,t.colors[t.side_map.left],'left'),centered(600,216,132,132,t.colors[t.side_map.right],'right'));label('LEFT / VASEN',300,316);label('RIGHT / OIKEA',600,316);}
+ if(t.module==='M'){add(centered(450,190,114,114,t.colors.target,'target'),centered(225,330,112,112,t.colors[t.side_map.left],'reference_left'),centered(675,330,112,112,t.colors[t.side_map.right],'reference_right'));label('CENTER / KESKI',450,275);label('LEFT / VASEN',225,430);label('RIGHT / OIKEA',675,430);}
+ if(t.module==='A'){
+  let cL=t.condition==='neutral'?neutral:t.colors[t.side_map.context_left],cR=t.condition==='neutral'?neutral:t.colors[t.side_map.context_left==='A'?'B':'A'];
+  add(box(236,105,166,174,cL,'surround_left'),box(498,105,166,174,cR,'surround_right'),centered(450,192,96,96,t.colors.target,'target'));
+  add(centered(270,372,88,88,t.colors[t.side_map.left],'reference_left'),centered(630,372,88,88,t.colors[t.side_map.right],'reference_right'));
+  label('CENTER / KESKI',450,300);label('LEFT / VASEN',270,444);label('RIGHT / OIKEA',630,444);
+ }
+ if(t.module==='B'){
+  let left=t.colors.neutral,right=t.colors.neutral;
+  if(t.condition==='chromatic'){if(t.side_map.context_left==='chromatic')left=t.colors.chromatic;else right=t.colors.chromatic;}
+  add(box(0,0,300,480,left,'gray_or_chromatic_left'),box(300,0,300,480,t.colors.target,'target_center'),box(600,0,300,480,right,'gray_or_chromatic_right'));
+ }
+ if(t.module==='D'){
+  let left=neutral,right=neutral;
+  if(t.condition==='contrast'){let dark=gray(.2),light=gray(.78);left=t.side_map.context_left==='dark'?dark:light;right=t.side_map.context_left==='dark'?light:dark;}
+  add(centered(285,224,228,228,left,'background_left'),centered(615,224,228,228,right,'background_right'));
+  add(centered(285,224,112,112,t.colors[t.side_map.left],'target_left'),centered(615,224,112,112,t.colors[t.side_map.right],'target_right'));
+  label('LEFT / VASEN',285,372);label('RIGHT / OIKEA',615,372);
+ }
+ return s;
+}
+const rgb=arr=>'rgb('+arr.join(',')+')';
+function paint(ctx,s){ctx.canvas.width=s.canvas.width;ctx.canvas.height=s.canvas.height;ctx.imageSmoothingEnabled=false;ctx.fillStyle=rgb(s.background);ctx.fillRect(0,0,s.canvas.width,s.canvas.height);
+ for(const x of s.objects){if(x.type==='rect'){ctx.fillStyle=rgb(x.color);ctx.fillRect(x.x,x.y,x.w,x.h);}else if(x.type==='text'){ctx.fillStyle=rgb(x.fill);ctx.font=x.font;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(x.text,x.x,x.y);}}
+}
+function fnv64(s){let h=0xcbf29ce484222325n;const bytes=new TextEncoder().encode(s);for(const byte of bytes){h^=BigInt(byte);h=(h*0x100000001b3n)&0xffffffffffffffffn;}return h.toString(16).padStart(16,'0');}
+function pctColor(t,role){return t.colors[role]?.realized??null;}
+function csvRow(s,t,a){const sc=scene(t),refA=t.colors.A,refB=t.colors.B,target=t.colors.target??null,r=target?.realized??null,angle=longerRadiusInfo(t);
+ return {schema_version:SCHEMA_VERSION,protocol_version:PROTOCOL_VERSION,protocol_sha256:PROTOCOL_SHA256,app_version:APP_VERSION,dataset_role:DATASET_ROLE,return_mode:RETURN_MODE,prng_version:'sfc32-v1',trial_id:t.id,order_index:t.presentation_index+1,block:t.block,block_index:t.block_index,module_id:t.module,trial_status:a?.valid===1?'completed':a?.valid===0?'invalid':'pending',attempt_no:a?.attempt_no||'',is_practice:t.is_practice?1:0,sample_origin:t.origin,bank_id:t.bank_id,repeat_key:t.repeat_key,repeated_from:t.repeated_from||'',K:t.K??'',theta_ref_deg:t.theta_ref_deg??'',phase_fraction:t.phase_fraction??'',sector_k:t.sector_k??'',rho_requested:t.rho_requested??'',mean_code_requested:t.mean_code_requested??'',weighted_code_requested:t.weighted_code_requested??'',reference_profile:t.reference_profile,variant:t.variant,condition:t.condition,delta_deg:t.delta_deg??'',delta_forward_realized_deg:angle.delta_forward_realized_deg??'',longer_base_cube:angle.longer_cube||'',longer_base_weighted:angle.longer_weighted||'',delta_from_longer_cube_deg:angle.delta_from_cube_longer_deg??'',delta_from_longer_weighted_deg:angle.delta_from_weighted_longer_deg??'',angular_sep_deg:t.angular_sep_deg??'',theta_a_requested_deg:t.theta_a_requested_deg??'',theta_b_requested_deg:t.theta_b_requested_deg??'',theta_target_requested_deg:t.theta_target_requested_deg??'',reference_A_rgb8:refA?.rgb8.join('-')||'',reference_B_rgb8:refB?.rgb8.join('-')||'',target_rgb8:target?.rgb8.join('-')||'',target_theta_realized_deg:r?.theta_deg??'',target_rho_realized:r?.rho??'',target_mean_code_realized:r?.mean_code??'',target_weighted_code_realized:r?.weighted_code??'',target_alpha_realized_deg:r?.alpha_deg??'',target_L_realized:r?.L??'',reference_A_theta_realized_deg:refA?.realized.theta_deg??'',reference_B_theta_realized_deg:refB?.realized.theta_deg??'',reference_A_rho_realized:refA?.realized.rho??'',reference_B_rho_realized:refB?.realized.rho??'',left_identity:t.side_map.left||'',right_identity:t.side_map.right||'',context_left_role:t.side_map.context_left||'',response_code:a?.response||'',response_identity:a?.identity||'',valid:a?.valid??'',invalid_reason:a?.invalid_reason||'',scene_hash_fnv64:fnv64(JSON.stringify(sc)),stimulus_hash_fnv64:fnv64(JSON.stringify(t)),scene_json:JSON.stringify(sc),stimulus_json:JSON.stringify(t),protocol_json:JSON.stringify(PROTOCOL)};
+}
+const CSV_COLUMNS=['schema_version','protocol_version','protocol_sha256','app_version','dataset_role','return_mode','prng_version','trial_id','order_index','block','block_index','module_id','trial_status','attempt_no','is_practice','sample_origin','bank_id','repeat_key','repeated_from','K','theta_ref_deg','phase_fraction','sector_k','rho_requested','mean_code_requested','weighted_code_requested','reference_profile','variant','condition','delta_deg','delta_forward_realized_deg','longer_base_cube','longer_base_weighted','delta_from_longer_cube_deg','delta_from_longer_weighted_deg','angular_sep_deg','theta_a_requested_deg','theta_b_requested_deg','theta_target_requested_deg','reference_A_rgb8','reference_B_rgb8','target_rgb8','target_theta_realized_deg','target_rho_realized','target_mean_code_realized','target_weighted_code_realized','target_alpha_realized_deg','target_L_realized','reference_A_theta_realized_deg','reference_B_theta_realized_deg','reference_A_rho_realized','reference_B_rho_realized','left_identity','right_identity','context_left_role','response_code','response_identity','valid','invalid_reason','scene_hash_fnv64','stimulus_hash_fnv64','scene_json','stimulus_json','protocol_json'];
+function quoteCsv(v){let s=v===null||v===undefined?'':String(v);if(/^[=+@\t\r]/.test(s)||(/^-/.test(s)&&!/^[-]?\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?$/.test(s)))s="'"+s;return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
+function csvText(s){const lines=[CSV_COLUMNS.join(',')];for(const t of s.plan){const attempts=s.attempts.filter(a=>a.trial_id===t.id);for(const a of attempts.length?attempts:[null]){const row=csvRow(s,t,a);lines.push(CSV_COLUMNS.map(k=>quoteCsv(row[k])).join(','));}}return '\ufeff'+lines.join('\r\n')+'\r\n';}
+function parseCsv(src){src=src.replace(/^\ufeff/,'');const all=[];let row=[],field='',quoted=false;for(let i=0;i<src.length;i++){const c=src[i];if(quoted){if(c==='"'){if(src[i+1]==='"'){field+='"';i++;}else quoted=false;}else field+=c;}else if(c==='"')quoted=true;else if(c===','){row.push(field);field='';}else if(c==='\n'){row.push(field.replace(/\r$/,''));all.push(row);row=[];field='';}else field+=c;}if(field||row.length)all.push([...row,field]);const header=all.shift()||[];return all.filter(r=>r.some(x=>x)).map(r=>Object.fromEntries(header.map((h,i)=>[h,r[i]??''])));}
+function selfTest(){const bank=makeFixedBank(),words=[123456,987654,17,99],plan=createPlan(words),main=plan.filter(t=>!t.is_practice),fixed=main.filter(t=>t.origin==='fixed'),gen=main.filter(t=>t.origin==='generated');
+ if(fixed.length!==105||gen.length!==45)throw Error('Wrong sample proportions');
+ const a=main.filter(t=>t.module==='A');if(a.length!==25||a.filter(t=>t.condition==='two_sided').length!==12)throw Error('A condition balance');
+ for(const t of plan){const sc=scene(t);if(sc.objects.filter(o=>o.type==='rect').some(o=>o.color.some(c=>c<0||c>255)))throw Error('Invalid scene RGB');}
+ const F1=main.filter(t=>t.block==='F1'),F2=main.filter(t=>t.block==='F2');for(const t of F1){const u=F2.find(x=>x.bank_id===t.bank_id);if(!u||JSON.stringify(t.colors)!==JSON.stringify(u.colors)||t.side_map.left===u.side_map.left)throw Error('Retest mismatch');}
+ const example={plan,attempts:[]};const records=parseCsv(csvText(example));if(records.length!==156||fnv64(records[0].scene_json)!==records[0].scene_hash_fnv64)throw Error('CSV replay mismatch');
+ for(const k of ['F','M','A','B','D'])if(bank[k].length<100)throw Error('Fixed library too small for '+k);
+ if(gray(.25).realized.theta_deg!==null)throw Error('Gray hue must be null');
+ for(const k of [0,6]){const f=F1.find(t=>t.sector_k===k&&t.phase_fraction===0&&t.rho_requested===.16);const m=main.find(t=>t.module==='M'&&t.sector_k===k&&t.phase_fraction===0&&t.rho_requested===.16);if(!f||!m||JSON.stringify(f.colors.B.rgb8)!==JSON.stringify(m.colors.target.rgb8))throw Error('Cross-task anchor RGB mismatch');}
+ return {test:'PASS',bank_sizes:Object.fromEntries(Object.entries(bank).map(([k,v])=>[k,v.length])),main:main.length,fixed:fixed.length,generated:gen.length,practice:6};
+}
+// -----------------------------------------------------------------------------
+// Participant interface. No network requests, tracking, registration or personal data.
+// -----------------------------------------------------------------------------
+let state=null,active=null,replayRows=[],replayPos=0,lastView='welcome',saveFailure=false;
+const el=id=>document.getElementById(id);
+function visible(view){for(const id of ['welcome','intro','trial','break','results','replay'])el(id).classList.toggle('hidden',id!==view);lastView=view;}
+function store(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));return true;}catch(e){saveFailure=true;el('storage-warning').classList.remove('hidden');return false;}}
+function restore(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');return s?.protocol_version===PROTOCOL_VERSION&&s.plan?.length===156&&Array.isArray(s.attempts)?s:null;}catch{return null;}}
+function newSession(){const words=seedWords(),plan=createPlan(words);return {protocol_version:PROTOCOL_VERSION,plan,attempts:[],idx:0,completed:false,last_intro:null,last_break:-1,pending:null};}
+function completed(t){return state.attempts.some(a=>a.trial_id===t.id&&a.valid===1);}
+function done(){return state.plan.filter(t=>!t.is_practice&&completed(t)).length;}
+function next(){if(!state)return;while(state.idx<state.plan.length&&completed(state.plan[state.idx]))state.idx++;
+ if(state.idx===state.plan.length){finish();return;}
+ const t=state.plan[state.idx];if(state.last_intro!==t.block){showIntro(t.block);return;}
+ startTrial();}
+function showIntro(block){state.last_intro=block;store();const b=BLOCK_INFO[block];el('intro-kicker').textContent='TASK / TEHTÄVÄ '+(BLOCKS.indexOf(block)+1)+' / 6';el('intro-title').textContent=b.title;
+ el('intro-description').innerHTML='<div><h2>English</h2><p>'+b.en+'</p></div><div><h2>Suomeksi</h2><p>'+b.fi+'</p></div>';
+ el('intro-practice').textContent=b.practice?b.practice+' practice examples / harjoitusta':'25 questions / 25 kysymystä';el('intro-export').classList.toggle('hidden',done()===0);visible('intro');}
+function startTrial(){const t=state.plan[state.idx];active=t;state.pending={id:t.id,started:true};store();visible('trial');let n=done();el('counter').textContent=t.is_practice?'Practice / Harjoitus':'Question / Kysymys '+(n+1)+' / '+TOTAL;
+ el('block-label').textContent=BLOCK_INFO[t.block].title;el('progress').style.width=(n/TOTAL*100)+'%';el('question').innerHTML=QUESTIONS[t.module];paint(el('experiment-canvas').getContext('2d'),scene(t));
+ const buttons=el('answers');buttons.innerHTML='';for(const [code,label]of RESP[t.module]){const b=document.createElement('button');b.type='button';b.className='btn primary';b.textContent=label;b.onclick=()=>answer(code);buttons.append(b);}}
+function answer(response){if(!active)return;const t=active,allowed=RESP[t.module].some(([c])=>c===response);if(!allowed)return;
+ let identity=t.side_map?.[response]||response;const record={trial_id:t.id,attempt_no:1+state.attempts.filter(a=>a.trial_id===t.id).length,valid:1,response,identity,invalid_reason:''};
+ state.attempts.push(record);state.idx++;state.pending=null;active=null;store();next();}
+function invalidate(reason){if(!active)return;const t=active;state.attempts.push({trial_id:t.id,attempt_no:1+state.attempts.filter(a=>a.trial_id===t.id).length,valid:0,response:'',identity:'',invalid_reason:reason});state.pending=null;active=null;store();el('break-title').textContent='Interrupted question / Keskeytynyt kysymys';el('break-description').textContent='You can continue with the same question. / Voit jatkaa saman kysymyksen uudelleen.';visible('break');}
+function downloadFilename(){const d=new Date(),z=(n,len=2)=>String(n).padStart(len,'0');return 'kysely_'+d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'_'+z(d.getHours())+z(d.getMinutes())+z(d.getSeconds())+'_'+z(d.getMilliseconds(),3)+'.csv';}
+function createDownload(){if(!state)return;const blob=new Blob([csvText(state)],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=downloadFilename();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+function finish(){if(!state||!state.plan.every(completed))return;const first=!state.completed;state.completed=true;state.pending=null;store();el('total-answered').textContent=String(done());visible('results');if(first)createDownload();}
+function beginNew(){state=newSession();active=null;store();next();}
+function resume(){state=restore();if(!state){beginNew();return;}if(state.pending){const t=state.plan.find(t=>t.id===state.pending.id);if(t&&!completed(t)){state.attempts.push({trial_id:t.id,attempt_no:1+state.attempts.filter(a=>a.trial_id===t.id).length,valid:0,response:'',identity:'',invalid_reason:'reload_during_trial'});}state.pending=null;store();}if(state.completed){visible('results');return;}active=null;next();}
+function showReplayRow(n){if(!replayRows.length)return;replayPos=clamp(n,0,replayRows.length-1);const row=replayRows[replayPos];el('replay-index').value=String(replayPos);
+ try{if(fnv64(row.scene_json)!==row.scene_hash_fnv64)throw Error('Scene checksum mismatch');const s=JSON.parse(row.scene_json);paint(el('replay-canvas').getContext('2d'),s);
+ el('replay-details').textContent=row.trial_id+' | '+row.block+' | '+row.condition+' | '+(row.response_code||'pending')+' | '+row.sample_origin+' | '+row.scene_hash_fnv64;}
+ catch(e){el('replay-details').textContent='Replay error / Toistovirhe: '+e.message;}}
+function imported(rows){const valid=rows.filter(r=>r.schema_version===SCHEMA_VERSION&&r.scene_json&&r.scene_hash_fnv64);if(!valid.length){alert('This is not a compatible v3 CSV / Tämä ei ole v3 CSV -tiedosto.');return;}replayRows=valid;const sel=el('replay-index');sel.innerHTML='';valid.forEach((r,i)=>{let opt=document.createElement('option');opt.value=i;opt.textContent=(i+1)+' · '+r.trial_id+' '+r.trial_status;sel.appendChild(opt);});
+ el('replay-count').textContent=valid.length+' saved scenes / tallennettua näkymää';visible('replay');showReplayRow(0);}
+function applyReturnInstructions(){
+ const email=RETURN_MODE==='email';
+ el('welcome-return-en').textContent=email
+  ?'At the end, download the CSV file and email it to tjsauk@utu.fi with subject Test data.'
+  :'At the end, download the CSV file and return it to your teacher.';
+ el('welcome-return-fi').textContent=email
+  ?'Lopuksi lataa CSV-tiedosto ja lähetä se osoitteeseen tjsauk@utu.fi otsikolla Test data.'
+  :'Lopuksi lataa CSV-tiedosto ja palauta se opettajalle.';
+ el('result-return-en').textContent=email
+  ?'Download the CSV file and email it as an attachment to tjsauk@utu.fi, subject Test data.'
+  :'Download the CSV file and return it to your teacher as instructed.';
+ el('result-return-fi').textContent=email
+  ?'Lataa CSV-tiedosto ja lähetä se liitetiedostona osoitteeseen tjsauk@utu.fi, otsikolla Test data.'
+  :'Lataa CSV-tiedosto ja palauta se opettajalle hänen ohjeidensa mukaisesti.';
+ el('return-heading').textContent=email?'Send the results / Lähetä tulokset':'Return the results / Palauta tulokset';
+}
+function startApp(){applyReturnInstructions();el('version').textContent='v'+APP_VERSION+' · '+DATASET_ROLE;el('start').onclick=()=>{if(restore()&&!confirm('Start a new session? Previous local work may be replaced. / Aloitetaanko uusi koe? Aiempi paikallinen koe korvataan.'))return;beginNew();};
+ if(restore())el('resume').classList.remove('hidden');el('resume').onclick=resume;el('begin-block').onclick=startTrial;
+ el('continue').onclick=()=>{el('break-title').textContent='Ready for the next part? / Valmis seuraavaan osaan?';el('break-description').textContent='Continue whenever you are ready. / Jatka, kun olet valmis.';next();};
+ el('save-partial').onclick=createDownload;el('intro-export').onclick=createDownload;el('download').onclick=createDownload;
+ el('erase-local').onclick=()=>{if(confirm('Erase saved answers on this browser? Make sure your CSV was downloaded and returned. / Poistetaanko selaimeen tallennetut vastaukset? Varmista ensin, että CSV on ladattu ja palautettu.')){try{localStorage.removeItem(STORAGE_KEY);}catch(e){}state=null;active=null;replayRows=[];el('resume').classList.add('hidden');visible('welcome');}};
+ el('new-session').onclick=()=>{if(confirm('Start another session? Download the current CSV first. / Uusi koe? Lataa ensin nykyinen CSV.'))beginNew();};
+ if(RETURN_MODE==='teacher'){el('open-email').classList.add('hidden');el('copy-email').classList.add('hidden');}else{el('open-email').href='mailto:'+EMAIL+'?subject='+encodeURIComponent('Test data');}
+ el('copy-email').onclick=()=>{const e=EMAIL+'\nTest data';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(e).then(()=>el('copy-email').textContent='Copied / Kopioitu').catch(()=>window.prompt('Copy address and subject / Kopioi osoite ja otsikko',e));else window.prompt('Copy address and subject / Kopioi osoite ja otsikko',e);};
+ el('import').onclick=()=>el('file').click();el('file').onchange=async e=>{try{const f=e.target.files[0];if(f)imported(parseCsv(await f.text()));}catch(err){alert(err.message);}e.target.value='';};
+ el('replay-index').onchange=e=>showReplayRow(+e.target.value);el('replay-prev').onclick=()=>showReplayRow(replayPos-1);el('replay-next').onclick=()=>showReplayRow(replayPos+1);
+ el('replay-close').onclick=()=>{if(state?.completed)visible('results');else if(state)visible('break');else visible('welcome');};
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)invalidate('tab_hidden');});
+ document.addEventListener('keydown',e=>{if(!active||lastView!=='trial')return;const n=Number(e.key);if(Number.isInteger(n)&&n>0&&n<=RESP[active.module].length){e.preventDefault();answer(RESP[active.module][n-1][0]);}});
+}
+if(typeof document!=='undefined')startApp();
+</script></body></html>
